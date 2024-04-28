@@ -24,12 +24,18 @@ public class EconomyProvider implements EconomyAPI {
     @Override
     public void addBalance(String playerName, EconomyType type, double amount) {
         if (!hasAccount(playerName)) return;
-        cache.get(playerName).getEconomy(type).addBalance(amount);
+        EconomyUserImpl economyUser = cache.get(playerName);
+        economyUser.getEconomy(type).addBalance(amount);
+
+        cache.add(playerName, economyUser);
     }
 
     @Override
     public void removeBalance(String playerName, EconomyType type, double amount) {
         if (!hasAccount(playerName)) return;
-        cache.get(playerName).getEconomy(type).removeBalance(amount);
+        EconomyUserImpl economyUser = cache.get(playerName);
+        economyUser.getEconomy(type).removeBalance(amount);
+
+        cache.add(playerName, economyUser);
     }
 }
