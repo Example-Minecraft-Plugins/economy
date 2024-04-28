@@ -12,7 +12,7 @@ import java.util.Map;
 public class EconomyUserImpl implements EconomyUser {
 
     private final String name;
-    private final Map<EconomyType, Economy> economies = new HashMap<>();
+    private final Map<EconomyType, EconomyImpl> economies = new HashMap<>();
 
     public EconomyUserImpl(String name) {
         this.name = name;

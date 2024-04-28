@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import me.davipccunha.tests.economy.EconomyPlugin;
 import me.davipccunha.tests.economy.api.EconomyType;
 import me.davipccunha.tests.economy.api.util.EconomyFormatter;
-import me.davipccunha.tests.economy.model.EconomyUser;
+import me.davipccunha.tests.economy.model.impl.EconomyUserImpl;
 import org.apache.commons.lang.math.NumberUtils;
 import org.bukkit.command.CommandSender;
 
@@ -20,7 +20,7 @@ public class EconomyAddSubCommand implements EconomySubCommand {
 
         String target = args[1];
 
-        EconomyUser economyUser = plugin.getEconomyCache().get(target);
+        EconomyUserImpl economyUser = plugin.getEconomyCache().get(target);
 
         if (economyUser == null) {
             sender.sendMessage("§cJogador não encontrado.");
@@ -36,8 +36,10 @@ public class EconomyAddSubCommand implements EconomySubCommand {
 
         if (!economyUser.getEconomy(economyType).addBalance(amount)) {
             sender.sendMessage("§cUm erro interno aconteceu. Comunique-o à nossa equipe.");
-            return false;
+            return true;
         }
+
+        plugin.getEconomyCache().add(target, economyUser);
 
         final String formattedAmount = EconomyFormatter.suffixFormat(amount);
         String message = String.format("§aAdicionado §f%s §apara §f%s§a.", formattedAmount, target);

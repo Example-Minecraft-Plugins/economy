@@ -2,12 +2,13 @@ package me.davipccunha.tests.economy.provider;
 
 import lombok.RequiredArgsConstructor;
 import me.davipccunha.tests.economy.api.EconomyAPI;
-import me.davipccunha.tests.economy.cache.EconomyCache;
 import me.davipccunha.tests.economy.api.EconomyType;
+import me.davipccunha.tests.economy.model.impl.EconomyUserImpl;
+import me.davipccunha.utils.cache.RedisCache;
 
 @RequiredArgsConstructor
 public class EconomyProvider implements EconomyAPI {
-    private final EconomyCache cache;
+    private final RedisCache<EconomyUserImpl> cache;
 
     @Override
     public boolean hasAccount(String playerName) {

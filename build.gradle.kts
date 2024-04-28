@@ -22,6 +22,7 @@ dependencies {
     compileOnly("org.projectlombok:lombok:1.18.28")
     annotationProcessor("org.projectlombok:lombok:1.18.28")
     implementation(project(":api"))
+    compileOnly(fileTree("D:\\Local Minecraft Server\\plugins") { include("bukkit-utils.jar") })
 }
 
 tasks.withType<JavaCompile> {
@@ -33,7 +34,6 @@ tasks.withType<JavaCompile> {
 tasks.withType<ShadowJar> {
     archiveClassifier.set("")
     archiveFileName.set("${project.name}.jar")
-
     destinationDirectory.set(file("D:\\Local Minecraft Server\\plugins"))
 }
 

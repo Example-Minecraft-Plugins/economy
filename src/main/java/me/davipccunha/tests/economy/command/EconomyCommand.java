@@ -1,12 +1,12 @@
 package me.davipccunha.tests.economy.command;
 
 import me.davipccunha.tests.economy.EconomyPlugin;
-import me.davipccunha.tests.economy.api.util.EconomyFormatter;
-import me.davipccunha.tests.economy.cache.EconomyCache;
-import me.davipccunha.tests.economy.command.subcommand.*;
 import me.davipccunha.tests.economy.api.EconomyType;
+import me.davipccunha.tests.economy.api.util.EconomyFormatter;
+import me.davipccunha.tests.economy.command.subcommand.*;
 import me.davipccunha.tests.economy.model.EconomyUser;
 import me.davipccunha.tests.economy.model.impl.EconomyUserImpl;
+import me.davipccunha.utils.cache.RedisCache;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -35,13 +35,12 @@ public class EconomyCommand implements CommandExecutor {
 
         String user = args.length == 1 ? args[0] : sender.getName();
 
-        EconomyCache cache = plugin.getEconomyCache();
+        RedisCache<EconomyUserImpl> cache = plugin.getEconomyCache();
 
         String senderName = sender.getName();
 
-        if (!cache.has(senderName)) {
+        if (!cache.has(senderName))
             cache.add(senderName, new EconomyUserImpl(senderName));
-        }
 
         EconomyUser economyUser = cache.get(user);
 

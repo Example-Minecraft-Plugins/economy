@@ -2,10 +2,11 @@ package me.davipccunha.tests.economy;
 
 import lombok.Getter;
 import me.davipccunha.tests.economy.api.EconomyAPI;
-import me.davipccunha.tests.economy.cache.EconomyCache;
 import me.davipccunha.tests.economy.command.EconomyCommand;
 import me.davipccunha.tests.economy.listener.PlayerJoinListener;
+import me.davipccunha.tests.economy.model.impl.EconomyUserImpl;
 import me.davipccunha.tests.economy.provider.EconomyProvider;
+import me.davipccunha.utils.cache.RedisCache;
 import org.bukkit.Bukkit;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.PluginManager;
@@ -15,7 +16,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 @Getter
 public class EconomyPlugin extends JavaPlugin {
 
-    private final EconomyCache economyCache = new EconomyCache();
+    private RedisCache<EconomyUserImpl> economyCache;
 
     @Override
     public void onEnable() {
@@ -29,10 +30,11 @@ public class EconomyPlugin extends JavaPlugin {
 
     private void init() {
         saveDefaultConfig();
-        registerListeners(
+        this.registerListeners(
                 new PlayerJoinListener(this)
         );
-        registerCommands();
+        this.registerCommands();
+        this.loadCaches();
 
         Bukkit.getServicesManager().register(EconomyAPI.class, new EconomyProvider(economyCache), this, ServicePriority.Normal);
     }
@@ -48,5 +50,9 @@ public class EconomyPlugin extends JavaPlugin {
     private void registerCommands() {
         this.getCommand("coins").setExecutor(new EconomyCommand(this));
         this.getCommand("cash").setExecutor(new EconomyCommand(this));
+    }
+
+    private void loadCaches() {
+        this.economyCache = new RedisCache<>("economy", EconomyUserImpl.class);
     }
 }

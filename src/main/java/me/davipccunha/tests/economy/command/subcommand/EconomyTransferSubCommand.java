@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import me.davipccunha.tests.economy.EconomyPlugin;
 import me.davipccunha.tests.economy.api.EconomyType;
 import me.davipccunha.tests.economy.api.util.EconomyFormatter;
-import me.davipccunha.tests.economy.model.EconomyUser;
+import me.davipccunha.tests.economy.model.impl.EconomyUserImpl;
 import org.apache.commons.lang.math.NumberUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
@@ -24,8 +24,8 @@ public class EconomyTransferSubCommand implements EconomySubCommand {
 
         String target = args[1];
 
-        EconomyUser economySender = plugin.getEconomyCache().get(sender.getName());
-        EconomyUser economyTarget = plugin.getEconomyCache().get(target);
+        EconomyUserImpl economySender = plugin.getEconomyCache().get(sender.getName());
+        EconomyUserImpl economyTarget = plugin.getEconomyCache().get(target);
 
         double amount = NumberUtils.toDouble(args[2]);
 
@@ -46,18 +46,21 @@ public class EconomyTransferSubCommand implements EconomySubCommand {
 
         if (economySender.getEconomy(economyType).getBalance() < amount) {
             sender.sendMessage("§cVocê não tem saldo suficiente.");
-            return false;
+            return true;
         }
 
         if (!economySender.getEconomy(economyType).removeBalance(amount)) {
             sender.sendMessage("§cUm erro interno aconteceu. Comunique-o à nossa equipe.");
-            return false;
+            return true;
         }
 
         if (!economyTarget.getEconomy(economyType).addBalance(amount)) {
             sender.sendMessage("§cUm erro interno aconteceu. Comunique-o à nossa equipe.");
-            return false;
+            return true;
         }
+
+        plugin.getEconomyCache().add(sender.getName(), economySender);
+        plugin.getEconomyCache().add(target, economyTarget);
 
         String formattedAmount = EconomyFormatter.suffixFormat(amount);
         String message = String.format("§aTransferido §f%s %s §apara §f%s§a.", formattedAmount, label, target);

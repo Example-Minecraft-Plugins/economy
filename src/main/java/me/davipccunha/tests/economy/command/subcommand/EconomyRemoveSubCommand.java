@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import me.davipccunha.tests.economy.EconomyPlugin;
 import me.davipccunha.tests.economy.api.EconomyType;
 import me.davipccunha.tests.economy.api.util.EconomyFormatter;
-import me.davipccunha.tests.economy.model.EconomyUser;
+import me.davipccunha.tests.economy.model.impl.EconomyUserImpl;
 import org.apache.commons.lang.math.NumberUtils;
 import org.bukkit.command.CommandSender;
 
@@ -21,7 +21,7 @@ public class EconomyRemoveSubCommand implements EconomySubCommand {
 
         String target = args[1];
 
-        EconomyUser economyUser = plugin.getEconomyCache().get(target);
+        EconomyUserImpl economyUser = plugin.getEconomyCache().get(target);
 
         double amount = NumberUtils.toDouble(args[2]);
 
@@ -37,8 +37,10 @@ public class EconomyRemoveSubCommand implements EconomySubCommand {
 
         if (!economyUser.getEconomy(economyType).removeBalance(amount)) {
             sender.sendMessage("§cUm erro interno aconteceu. Comunique-o à nossa equipe.");
-            return false;
+            return true;
         }
+
+        plugin.getEconomyCache().add(target, economyUser);
 
         String formattedAmount = EconomyFormatter.suffixFormat(amount);
         String message = String.format("§aRemovido §f%s %s §ade §f%s§a.", formattedAmount, label, target);
