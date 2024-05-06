@@ -43,6 +43,7 @@ bukkit {
     apiVersion = "1.8"
     version = "${project.version}"
     main = "me.davipccunha.tests.economy.EconomyPlugin"
+    depend = listOf("bukkit-utils")
     description = "Plugin that adds different currencies."
     author = "Davi C"
 
