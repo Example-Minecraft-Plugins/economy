@@ -1,13 +1,13 @@
 package me.davipccunha.tests.economy.model;
 
 public interface Economy {
-    boolean addBalance(double amount);
+    void addBalance(double amount);
 
-    boolean removeBalance(double amount);
+    void removeBalance(double amount);
 
     double getBalance();
 
-    boolean setBalance(double amount);
+    void setBalance(double amount);
 
     boolean hasBalance(double amount);
 }

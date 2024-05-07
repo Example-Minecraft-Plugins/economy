@@ -15,10 +15,10 @@ public class PlayerJoinListener implements Listener {
 
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
-        RedisCache<EconomyUserImpl> cache = plugin.getEconomyCache();
+        final RedisCache<EconomyUserImpl> cache = plugin.getEconomyCache();
+        final String name = event.getPlayer().getName();
 
-        if (!cache.has(event.getPlayer().getName())) {
-            cache.add(event.getPlayer().getName(), new EconomyUserImpl(event.getPlayer().getName()));
-        }
+        if (!cache.has(name))
+            cache.add(name, new EconomyUserImpl(name));
     }
 }

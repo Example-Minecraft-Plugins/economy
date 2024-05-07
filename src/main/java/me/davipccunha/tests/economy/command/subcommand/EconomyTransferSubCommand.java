@@ -16,27 +16,35 @@ public class EconomyTransferSubCommand implements EconomySubCommand {
 
     @Override
     public boolean execute(CommandSender sender, String label, String[] args) {
-        if (args.length != 3) return false;
+        if (!(sender instanceof Player)) {
+            sender.sendMessage("§cApenas jogadores podem executar este comando.");
+            return true;
+        }
 
-        if (!(sender instanceof Player)) return false;
+        final EconomyType economyType = EconomyType.valueOf(label.toUpperCase());
 
-        EconomyType economyType = EconomyType.valueOf(label.toUpperCase());
+        if (economyType.equals(EconomyType.CASH)) {
+            sender.sendMessage("§cVocê não pode transferir cash");
+            return true;
+        }
 
-        String target = args[1];
+        if (args.length < 3) return false;
 
-        EconomyUserImpl economySender = plugin.getEconomyCache().get(sender.getName());
-        EconomyUserImpl economyTarget = plugin.getEconomyCache().get(target);
+        final String target = args[1];
 
-        double amount = NumberUtils.toDouble(args[2]);
+        final EconomyUserImpl economySender = plugin.getEconomyCache().get(sender.getName());
+        final EconomyUserImpl economyTarget = plugin.getEconomyCache().get(target);
+
+        final double amount = NumberUtils.toDouble(args[2]);
 
         if (economyTarget == null) {
             sender.sendMessage("§cJogador não encontrado.");
-            return false;
+            return true;
         }
 
         if (sender.getName().equals(target)) {
             sender.sendMessage("§cVocê não pode transferir para si mesmo.");
-            return false;
+            return true;
         }
 
         if (amount <= 0) {
@@ -49,21 +57,14 @@ public class EconomyTransferSubCommand implements EconomySubCommand {
             return true;
         }
 
-        if (!economySender.getEconomy(economyType).removeBalance(amount)) {
-            sender.sendMessage("§cUm erro interno aconteceu. Comunique-o à nossa equipe.");
-            return true;
-        }
-
-        if (!economyTarget.getEconomy(economyType).addBalance(amount)) {
-            sender.sendMessage("§cUm erro interno aconteceu. Comunique-o à nossa equipe.");
-            return true;
-        }
+        economySender.getEconomy(economyType).removeBalance(amount);
+        economyTarget.getEconomy(economyType).addBalance(amount);
 
         plugin.getEconomyCache().add(sender.getName(), economySender);
         plugin.getEconomyCache().add(target, economyTarget);
 
-        String formattedAmount = EconomyFormatter.suffixFormat(amount);
-        String message = String.format("§aTransferido §f%s %s §apara §f%s§a.", formattedAmount, label, target);
+        final String formattedAmount = EconomyFormatter.suffixFormat(amount);
+        final String message = String.format("§aTransferido §f%s %s §apara §f%s§a.", formattedAmount, label, target);
 
         sender.sendMessage(message);
 

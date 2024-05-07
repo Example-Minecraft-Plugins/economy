@@ -29,48 +29,39 @@ public class EconomyCommand implements CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        if (args.length == 0 && !(sender instanceof Player)) return false;
-
-        EconomyType economyType = EconomyType.valueOf(label.toUpperCase());
-
-        String user = args.length == 1 ? args[0] : sender.getName();
-
-        RedisCache<EconomyUserImpl> cache = plugin.getEconomyCache();
-
-        String senderName = sender.getName();
-
-        if (!cache.has(senderName))
-            cache.add(senderName, new EconomyUserImpl(senderName));
-
-        EconomyUser economyUser = cache.get(user);
-
-        if (economyUser == null) {
-            sender.sendMessage("§cUsuário não encontrado!");
+        if (args.length == 0 && !(sender instanceof Player)) {
+            sender.sendMessage("§cUso: /" + label + " <player>");
             return false;
         }
 
-        if (args.length <= 1) {
+        // TODO: Should find a better way to handle economy aliases
+        if (label.equalsIgnoreCase("money"))
+            label = "coins";
+
+        final RedisCache<EconomyUserImpl> cache = plugin.getEconomyCache();
+        final EconomyType economyType = EconomyType.valueOf(label.toUpperCase());
+        final String user = args.length >= 1 ? args[0] : sender.getName();
+        final EconomySubCommand economySubCommand = subCommands.get(user);
+
+        if (economySubCommand == null) {
+            final EconomyUser economyUser = cache.get(user);
+
+            if (economyUser == null) {
+                sender.sendMessage("§cUsuário não encontrado!");
+                return true;
+            }
+
             double balance = economyUser.getEconomy(economyType).getBalance();
 
             final String formattedBalance = EconomyFormatter.suffixFormat(balance);
-            String message = String.format("§a%s possui atualmente §f%s §a%s.", args.length == 1 ? user : "Você", formattedBalance, label);
+            final String message = String.format("§a%s possui atualmente §f%s §a%s.", args.length == 1 ? user : "Você", formattedBalance, label);
 
             sender.sendMessage(message);
 
             return true;
         }
 
-        String subCommand = args[0].toLowerCase();
-
-        EconomySubCommand economySubCommand = subCommands.get(subCommand);
-
-        if (economySubCommand == null) {
-            sender.sendMessage("§cSubcomando não encontrado!");
-
-            return false;
-        }
-
-        if (!economySubCommand.execute((Player) sender, label, args)) {
+        if (!economySubCommand.execute(sender, label, args)) {
             sender.sendMessage("§cUso: " + economySubCommand.getUsage(label));
             return false;
         }

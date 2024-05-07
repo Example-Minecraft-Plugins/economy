@@ -15,7 +15,12 @@ public class EconomyRemoveSubCommand implements EconomySubCommand {
 
     @Override
     public boolean execute(CommandSender sender, String label, String[] args) {
-        if (args.length != 3) return false;
+        if (!sender.hasPermission("economy.admin")) {
+            sender.sendMessage("§cVocê não tem permissão para executar este comando.");
+            return true;
+        }
+
+        if (args.length < 3) return false;
 
         EconomyType economyType = EconomyType.valueOf(label.toUpperCase());
 
@@ -35,10 +40,7 @@ public class EconomyRemoveSubCommand implements EconomySubCommand {
             return false;
         }
 
-        if (!economyUser.getEconomy(economyType).removeBalance(amount)) {
-            sender.sendMessage("§cUm erro interno aconteceu. Comunique-o à nossa equipe.");
-            return true;
-        }
+        economyUser.getEconomy(economyType).removeBalance(amount);
 
         plugin.getEconomyCache().add(target, economyUser);
 

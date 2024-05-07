@@ -49,13 +49,12 @@ bukkit {
 
     commands {
         register("coins") {
-            description = "All coins related commands."
-            permission = "coins.command"
+            description = "Comandos relacionados à economia de Coins"
+            aliases = listOf("money")
         }
 
         register("cash") {
-            description = "All cash related commands."
-            permission = "cash.command"
+            description = "Comandos relacionados à economia de Cash"
         }
     }
 }

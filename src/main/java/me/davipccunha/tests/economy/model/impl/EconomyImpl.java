@@ -8,27 +8,23 @@ public class EconomyImpl implements Economy {
     private double balance;
 
     @Override
-    public boolean addBalance(double amount) {
-        if (amount < 0) return false;
-
+    public void addBalance(double amount) {
+        if (amount <= 0) return;
         this.balance += amount;
-        return true;
     }
 
     @Override
-    public boolean removeBalance(double amount) {
-        if (amount < 0) return false;
+    public void removeBalance(double amount) {
+        if (amount <= 0) return;
 
         this.balance = Math.max(0, this.balance - amount);
-        return true;
     }
 
     @Override
-    public boolean setBalance(double amount) {
-        if (amount < 0) return false;
+    public void setBalance(double amount) {
+        if (amount < 0) return;
 
-        this.balance = amount;;
-        return true;
+        this.balance = amount;
     }
 
     @Override

@@ -14,13 +14,18 @@ public class EconomyAddSubCommand implements EconomySubCommand {
 
     @Override
     public boolean execute(CommandSender sender, String label, String[] args) {
-        if (args.length != 3) return false;
+        if (!sender.hasPermission("economy.admin")) {
+            sender.sendMessage("§cVocê não tem permissão para executar este comando.");
+            return true;
+        }
 
-        EconomyType economyType = EconomyType.valueOf(label.toUpperCase());
+        if (args.length < 3) return false;
 
-        String target = args[1];
+        final EconomyType economyType = EconomyType.valueOf(label.toUpperCase());
 
-        EconomyUserImpl economyUser = plugin.getEconomyCache().get(target);
+        final String target = args[1];
+
+        final EconomyUserImpl economyUser = plugin.getEconomyCache().get(target);
 
         if (economyUser == null) {
             sender.sendMessage("§cJogador não encontrado.");
@@ -34,10 +39,7 @@ public class EconomyAddSubCommand implements EconomySubCommand {
             return false;
         }
 
-        if (!economyUser.getEconomy(economyType).addBalance(amount)) {
-            sender.sendMessage("§cUm erro interno aconteceu. Comunique-o à nossa equipe.");
-            return true;
-        }
+        economyUser.getEconomy(economyType).addBalance(amount);
 
         plugin.getEconomyCache().add(target, economyUser);
 
