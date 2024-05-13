@@ -4,9 +4,9 @@ import me.davipccunha.tests.economy.EconomyPlugin;
 import me.davipccunha.tests.economy.api.EconomyType;
 import me.davipccunha.tests.economy.api.util.EconomyFormatter;
 import me.davipccunha.tests.economy.command.subcommand.*;
-import me.davipccunha.tests.economy.model.EconomyUser;
 import me.davipccunha.tests.economy.model.impl.EconomyUserImpl;
 import me.davipccunha.utils.cache.RedisCache;
+import me.davipccunha.utils.messages.ErrorMessages;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -21,10 +21,8 @@ public class EconomyCommand implements CommandExecutor {
 
     public EconomyCommand(EconomyPlugin plugin) {
         this.plugin = plugin;
-        this.subCommands.put("adicionar", new EconomyAddSubCommand(plugin));
-        this.subCommands.put("remover", new EconomyRemoveSubCommand(plugin));
-        this.subCommands.put("definir", new EconomySetSubCommand(plugin));
-        this.subCommands.put("transferir", new EconomyTransferSubCommand(plugin));
+
+        this.loadSubCommands();
     }
 
     @Override
@@ -40,21 +38,22 @@ public class EconomyCommand implements CommandExecutor {
 
         final RedisCache<EconomyUserImpl> cache = plugin.getEconomyCache();
         final EconomyType economyType = EconomyType.valueOf(label.toUpperCase());
-        final String user = args.length >= 1 ? args[0] : sender.getName();
+        final String user = args.length > 0 ? args[0].toLowerCase() : sender.getName().toLowerCase();
         final EconomySubCommand economySubCommand = subCommands.get(user);
 
         if (economySubCommand == null) {
-            final EconomyUser economyUser = cache.get(user);
+            final EconomyUserImpl economyUser = cache.get(user);
 
             if (economyUser == null) {
-                sender.sendMessage("§cUsuário não encontrado!");
+                sender.sendMessage(ErrorMessages.PLAYER_NOT_FOUND.getMessage());
                 return true;
             }
 
             double balance = economyUser.getEconomy(economyType).getBalance();
 
             final String formattedBalance = EconomyFormatter.suffixFormat(balance);
-            final String message = String.format("§a%s possui atualmente §f%s §a%s.", args.length == 1 ? user : "Você", formattedBalance, label);
+            final String message = String.format("§a%s possui atualmente §f%s §a%s.",
+                    args.length == 1 ? economyUser.getUsername() : "Você", formattedBalance, label);
 
             sender.sendMessage(message);
 
@@ -67,5 +66,12 @@ public class EconomyCommand implements CommandExecutor {
         }
 
         return true;
+    }
+
+    private void loadSubCommands() {
+        this.subCommands.put("adicionar", new EconomyAddSubCommand(plugin));
+        this.subCommands.put("remover", new EconomyRemoveSubCommand(plugin));
+        this.subCommands.put("definir", new EconomySetSubCommand(plugin));
+        this.subCommands.put("transferir", new EconomyTransferSubCommand(plugin));
     }
 }

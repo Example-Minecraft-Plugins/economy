@@ -11,11 +11,11 @@ import java.util.Map;
 @Getter
 public class EconomyUserImpl implements EconomyUser {
 
-    private final String name;
+    private final String username;
     private final Map<EconomyType, EconomyImpl> economies = new HashMap<>();
 
-    public EconomyUserImpl(String name) {
-        this.name = name;
+    public EconomyUserImpl(String username) {
+        this.username = username;
         this.loadEconomies();
     }
 

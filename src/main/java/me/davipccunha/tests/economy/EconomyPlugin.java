@@ -36,7 +36,7 @@ public class EconomyPlugin extends JavaPlugin {
         this.registerCommands();
         this.loadCaches();
 
-        Bukkit.getServicesManager().register(EconomyAPI.class, new EconomyProvider(economyCache), this, ServicePriority.Normal);
+        Bukkit.getServicesManager().register(EconomyAPI.class, new EconomyProvider(economyCache), this, ServicePriority.High);
     }
 
     private void registerListeners(Listener... listeners) {

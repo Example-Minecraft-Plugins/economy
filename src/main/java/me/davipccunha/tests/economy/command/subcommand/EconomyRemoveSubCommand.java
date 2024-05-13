@@ -5,6 +5,7 @@ import me.davipccunha.tests.economy.EconomyPlugin;
 import me.davipccunha.tests.economy.api.EconomyType;
 import me.davipccunha.tests.economy.api.util.EconomyFormatter;
 import me.davipccunha.tests.economy.model.impl.EconomyUserImpl;
+import me.davipccunha.utils.messages.ErrorMessages;
 import org.apache.commons.lang.math.NumberUtils;
 import org.bukkit.command.CommandSender;
 
@@ -16,36 +17,36 @@ public class EconomyRemoveSubCommand implements EconomySubCommand {
     @Override
     public boolean execute(CommandSender sender, String label, String[] args) {
         if (!sender.hasPermission("economy.admin")) {
-            sender.sendMessage("§cVocê não tem permissão para executar este comando.");
+            sender.sendMessage(ErrorMessages.NO_PERMISSION.getMessage());
             return true;
         }
 
         if (args.length < 3) return false;
 
-        EconomyType economyType = EconomyType.valueOf(label.toUpperCase());
+        final EconomyType economyType = EconomyType.valueOf(label.toUpperCase());
 
-        String target = args[1];
+        final String target = args[1].toLowerCase();
 
-        EconomyUserImpl economyUser = plugin.getEconomyCache().get(target);
+        final EconomyUserImpl economyUser = plugin.getEconomyCache().get(target);
 
-        double amount = NumberUtils.toDouble(args[2]);
+        final double amount = NumberUtils.toDouble(args[2]);
 
         if (economyUser == null) {
-            sender.sendMessage("§cJogador não encontrado.");
-            return false;
+            sender.sendMessage(ErrorMessages.PLAYER_NOT_FOUND.getMessage());
+            return true;
         }
 
         if (amount <= 0) {
-            sender.sendMessage("§cQuantidade inválida.");
-            return false;
+            sender.sendMessage(ErrorMessages.INVALID_AMOUNT.getMessage());
+            return true;
         }
 
         economyUser.getEconomy(economyType).removeBalance(amount);
 
         plugin.getEconomyCache().add(target, economyUser);
 
-        String formattedAmount = EconomyFormatter.suffixFormat(amount);
-        String message = String.format("§aRemovido §f%s %s §ade §f%s§a.", formattedAmount, label, target);
+        final String formattedAmount = EconomyFormatter.suffixFormat(amount);
+        final String message = String.format("§aRemovidos §f%s %s §ade §f%s§a.", formattedAmount, economyType, economyUser.getUsername());
         sender.sendMessage(message);
 
         return true;
@@ -53,6 +54,6 @@ public class EconomyRemoveSubCommand implements EconomySubCommand {
 
     @Override
     public String getUsage(String label) {
-        return "/" + label + " remover <player> <quantidade>";
+        return "/" + label + " remover <jogador> <quantidade>";
     }
 }
