@@ -29,7 +29,7 @@ public class EconomySetSubCommand implements EconomySubCommand {
 
         final EconomyUserImpl economyUser = plugin.getEconomyCache().get(target);
 
-        final double amount = NumberUtils.toDouble(args[2]);
+        final double amount = NumberUtils.toDouble(args[2], -1);
 
         if (economyUser == null) {
             sender.sendMessage(ErrorMessages.PLAYER_NOT_FOUND.getMessage());
